@@ -899,8 +899,25 @@ document.getElementById('send-proof-btn').onclick=async function(){
   else{var fi=document.getElementById('proof-input');if(!fi.files||!fi.files[0]){toast('⚠️ Choisissez une capture d\'écran','error');return;}}
   btn.innerHTML='<span class="loader"></span>...';btn.disabled=true;
   curOrderId='CMD-'+Date.now();
-  try{await db.collection('orders').add({orderId:curOrderId,uid:currentUser?currentUser.uid:'anonyme',userEmail:currentUser?currentUser.email:'anonyme',article:selItem.name,diamants:selItem.diamonds,prix:selItem.price,paiement:pl,id_freefire:id1,statut:'attente',proofType:curProofType,proofTxid:proof,totalPaye:total,productImg:getProductImg(selItem.name),createdAt:firebase.firestore.FieldValue.serverTimestamp()});loadOrders();}catch(e){}
-  if(curProofType==='screenshot'){var fi2=document.getElementById('proof-input');if(fi2.files&&fi2.files[0]){var f=fi2.files[0],r2=new FileReader();r2.onload=function(ev){var p={orderId:curOrderId,fileName:f.name,mimeType:f.type,data:ev.target.result.split(',')[1],article:selItem.name,prix:selItem.price,id_freefire:id1};var x=new XMLHttpRequest();x.open('POST',DRIVE_URL,true);x.setRequestHeader('Content-Type','text/plain');x.send(JSON.stringify(p));};r2.readAsDataURL(f);}}
+  // Lire la photo si screenshot
+  var proofImageData='';
+  if(curProofType==='screenshot'){
+    var fi2=document.getElementById('proof-input');
+    if(fi2.files&&fi2.files[0]){
+      var f=fi2.files[0];
+      proofImageData=await new Promise(function(res){
+        var r2=new FileReader();
+        r2.onload=function(ev){
+          // Envoyer vers Google Drive
+          var p={orderId:curOrderId,fileName:f.name,mimeType:f.type,data:ev.target.result.split(',')[1],article:selItem.name,prix:selItem.price,id_freefire:id1};
+          var x=new XMLHttpRequest();x.open('POST',DRIVE_URL,true);x.setRequestHeader('Content-Type','text/plain');x.send(JSON.stringify(p));
+          res(ev.target.result);
+        };
+        r2.readAsDataURL(f);
+      });
+    }
+  }
+  try{await db.collection('orders').add({orderId:curOrderId,uid:currentUser?currentUser.uid:'anonyme',userEmail:currentUser?currentUser.email:'anonyme',article:selItem.name,diamants:selItem.diamonds,prix:selItem.price,paiement:pl,id_freefire:id1,statut:'attente',proofType:curProofType,proofTxid:proof,proofImage:proofImageData,totalPaye:total,productImg:getProductImg(selItem.name),createdAt:firebase.firestore.FieldValue.serverTimestamp()});loadOrders();}catch(e){}
   document.getElementById('order-overlay').classList.remove('open');btn.innerHTML='✅ Envoyer';btn.disabled=false;
   document.getElementById('final-recap').innerHTML='<div class="recap-row"><span>'+selItem.name+'</span><span style="color:var(--red);font-weight:900;">'+prix.toLocaleString('fr-FR')+' FCFA</span></div>'+(fraisAmt>0?'<div class="recap-row"><span style="color:var(--muted)">Frais</span><span style="color:var(--muted)">+'+fraisAmt.toLocaleString('fr-FR')+' FCFA</span></div>':'')+'<div style="height:1px;background:var(--border2);margin:.4rem 0;"></div><div class="recap-row"><span style="font-weight:900;">Total payé</span><span style="color:var(--red);font-weight:900;">'+total.toLocaleString('fr-FR')+' FCFA</span></div><div style="font-size:.75rem;color:var(--muted);margin-top:.4rem;">ID Free Fire : <strong style="color:var(--text)">'+id1+'</strong> · '+pl+'</div><div style="font-size:.75rem;color:var(--muted)">Commande : <strong style="color:var(--text)">#'+curOrderId.slice(-8)+'</strong></div>';
   document.getElementById('success-sheet').classList.add('open');
@@ -998,6 +1015,7 @@ function renderAdminOrders(){
     var oid = o.orderId || o.id.slice(-8).toUpperCase();
     var preuve = '';
     if(o.proofType==='txid' && o.proofTxid) preuve = '<span>Preuve :</span> <strong style="color:#c084fc;">'+o.proofTxid+'</strong><br/>';
+    else if(o.proofType==='screenshot' && o.proofImage) preuve = '<span>Preuve :</span><br/><img src="'+o.proofImage+'" style="width:100%;max-height:200px;object-fit:contain;border-radius:8px;margin:.4rem 0;border:1px solid var(--border2);cursor:pointer;" onclick="window.open(this.src,\'_blank\')"/><br/>';
     else if(o.proofType==='screenshot') preuve = '<span>Preuve :</span> <strong>📸 Capture envoyée</strong><br/>';
     var acts = '';
     if(o.statut==='attente'){
