@@ -229,6 +229,40 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .proof-choice{display:flex;align-items:center;gap:.9rem;background:var(--dark3);border:1.5px solid var(--border2);border-radius:12px;padding:.9rem 1rem;cursor:pointer;margin-bottom:.6rem;transition:all .2s;}
 .proof-choice:hover{border-color:var(--red);}
 .pc-label{flex:1;font-size:.9rem;font-weight:800;}
+
+/* ── ADMIN PANEL ── */
+.admin-wrap{max-width:480px;margin:0 auto;padding:1rem;}
+.admin-head{background:linear-gradient(135deg,#0a0020,#150035);padding:1.2rem;text-align:center;border-bottom:1px solid rgba(138,43,226,.3);}
+.admin-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:3px;color:#c084fc;}
+.admin-badge{display:inline-block;background:rgba(192,132,252,.12);color:#c084fc;font-size:.65rem;font-weight:800;padding:.2rem .7rem;border-radius:20px;border:1px solid rgba(192,132,252,.3);margin-top:.3rem;letter-spacing:1px;}
+.admin-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:1rem;}
+.astat{background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:.7rem;text-align:center;}
+.astat .n{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:#c084fc;}
+.astat .l{font-size:.58rem;color:var(--muted);text-transform:uppercase;font-weight:700;}
+.admin-filter{display:flex;gap:.4rem;margin-bottom:.8rem;overflow-x:auto;scrollbar-width:none;}
+.afbtn{flex:none;padding:.35rem .8rem;border-radius:20px;font-size:.73rem;font-weight:800;cursor:pointer;border:1.5px solid var(--border2);color:var(--muted);background:none;font-family:'Nunito',sans-serif;transition:all .2s;}
+.afbtn.active{background:#a855f7;border-color:#a855f7;color:#fff;}
+.admin-card{background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:.9rem;margin-bottom:.7rem;animation:fadeIn .3s ease both;}
+.admin-card.ac-attente{border-left:3px solid var(--orange);}
+.admin-card.ac-termine{border-left:3px solid var(--green);}
+.admin-card.ac-annule{border-left:3px solid var(--red);}
+.ac-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.6rem;}
+.ac-id{font-size:.82rem;font-weight:900;}
+.ac-date{font-size:.68rem;color:var(--muted);margin-top:.1rem;}
+.ac-info{font-size:.78rem;line-height:1.9;margin-bottom:.7rem;background:rgba(255,255,255,.03);border-radius:8px;padding:.6rem .8rem;}
+.ac-info span{color:var(--muted);font-size:.72rem;}
+.ac-acts{display:flex;gap:.5rem;}
+.ac-btn-ok{flex:1;padding:.5rem;border-radius:8px;font-size:.75rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;background:rgba(34,197,94,.12);color:var(--green);border:1.5px solid rgba(34,197,94,.3);transition:all .2s;}
+.ac-btn-ok:active{background:rgba(34,197,94,.3);}
+.ac-btn-no{flex:1;padding:.5rem;border-radius:8px;font-size:.75rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;background:rgba(232,25,44,.1);color:var(--red2);border:1.5px solid rgba(232,25,44,.25);transition:all .2s;}
+.ac-btn-no:active{background:rgba(232,25,44,.25);}
+.admin-login-wrap{max-width:360px;margin:4rem auto;padding:1.5rem;}
+.admin-pw-card{background:var(--card);border:1px solid rgba(138,43,226,.3);border-radius:18px;padding:1.8rem;text-align:center;}
+.admin-pw-icon{font-size:2.5rem;margin-bottom:.5rem;}
+.admin-pw-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;color:#c084fc;margin-bottom:.25rem;}
+.admin-pw-sub{font-size:.78rem;color:var(--muted);margin-bottom:1.3rem;}
+.admin-exit-btn{width:calc(100% - 2rem);margin:.5rem 1rem 1rem;padding:.65rem;background:rgba(138,43,226,.1);border:1.5px solid rgba(138,43,226,.25);border-radius:10px;color:#c084fc;font-size:.85rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;}
+.admin-refresh-btn{background:rgba(192,132,252,.1);border:1px solid rgba(192,132,252,.2);color:#c084fc;font-size:.75rem;font-weight:800;padding:.35rem .8rem;border-radius:8px;cursor:pointer;font-family:'Nunito',sans-serif;margin-bottom:.8rem;}
 </style>
 </head>
 <body>
@@ -518,6 +552,49 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <button onclick="tunnelStep(4)" style="width:100%;padding:.7rem;border:1px solid var(--border2);border-radius:10px;background:transparent;color:var(--muted);font-weight:800;font-size:.82rem;cursor:pointer;font-family:'Nunito',sans-serif;">← Retour</button>
     </div>
 
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="screen" id="screen-admin">
+  <!-- Vue login admin -->
+  <div id="admin-login-view">
+    <div class="admin-login-wrap">
+      <div class="admin-pw-card">
+        <div class="admin-pw-icon">🔐</div>
+        <div class="admin-pw-title">ADMIN PANEL</div>
+        <div class="admin-pw-sub">Accès réservé — SPEED.STORE</div>
+        <input class="finput" type="password" id="admin-pw-input" placeholder="Mot de passe admin"/>
+        <div class="errmsg" id="admin-pw-err" style="display:none;margin-bottom:.8rem;">❌ Mot de passe incorrect</div>
+        <button class="bfull bred" id="admin-pw-btn">Accéder →</button>
+        <button onclick="goScreen('home')" style="width:100%;margin-top:.7rem;padding:.6rem;border:1px solid var(--border2);border-radius:10px;background:transparent;color:var(--muted);font-weight:800;font-size:.82rem;cursor:pointer;font-family:'Nunito',sans-serif;">Retour</button>
+      </div>
+    </div>
+  </div>
+  <!-- Dashboard admin -->
+  <div id="admin-dash-view" style="display:none;">
+    <div class="admin-head">
+      <div class="admin-title">⚡ ADMIN PANEL</div>
+      <div class="admin-badge">SPEED.STORE</div>
+    </div>
+    <div class="admin-wrap">
+      <div class="admin-stats">
+        <div class="astat"><div class="n" id="as-total">0</div><div class="l">Total</div></div>
+        <div class="astat"><div class="n" id="as-attente">0</div><div class="l">En attente</div></div>
+        <div class="astat"><div class="n" id="as-termine">0</div><div class="l">Terminées</div></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;">
+        <div class="admin-filter" style="margin-bottom:0;">
+          <button class="afbtn active" id="af-all">Tout</button>
+          <button class="afbtn" id="af-attente">⏳ Attente</button>
+          <button class="afbtn" id="af-termine">✅ Terminées</button>
+          <button class="afbtn" id="af-annule">❌ Annulées</button>
+        </div>
+        <button class="admin-refresh-btn" onclick="loadAdminOrders()">↻</button>
+      </div>
+      <div id="admin-orders-list"></div>
+    </div>
+    <button class="admin-exit-btn" onclick="goScreen('home')">← Quitter l'admin</button>
   </div>
 </div>
 
@@ -841,6 +918,121 @@ document.getElementById('bnav-profil').onclick=function(){requireAuth('profil');
 document.getElementById('see-all-btn').onclick=function(){goScreen('boutique');};
 document.getElementById('go-orders-btn').onclick=function(){goScreen('commandes');};
 document.getElementById('wa-btn').onclick=function(){window.open('https://wa.me/22892688269','_blank');};
+
+// ── ADMIN PANEL ──
+var ADMIN_PASSWORD = 'SPEEDSTORE2030';
+var adminLogoClicks = 0;
+var adminLogoTimer;
+var adminFilter = 'all';
+var allAdminOrders = [];
+
+// Accès secret : cliquer le logo 7 fois rapidement
+var _logoEl = document.getElementById('logo-btn');
+_logoEl.addEventListener('click', function(){
+  adminLogoClicks++;
+  clearTimeout(adminLogoTimer);
+  adminLogoTimer = setTimeout(function(){ adminLogoClicks = 0; }, 2500);
+  if(adminLogoClicks >= 7){
+    adminLogoClicks = 0;
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+    document.getElementById('screen-admin').classList.add('active');
+    document.getElementById('admin-login-view').style.display = 'block';
+    document.getElementById('admin-dash-view').style.display = 'none';
+    document.getElementById('admin-pw-input').value = '';
+    document.getElementById('admin-pw-err').style.display = 'none';
+  }
+});
+
+document.getElementById('admin-pw-btn').onclick = function(){
+  var pw = document.getElementById('admin-pw-input').value;
+  if(pw === ADMIN_PASSWORD){
+    document.getElementById('admin-login-view').style.display = 'none';
+    document.getElementById('admin-dash-view').style.display = 'block';
+    loadAdminOrders();
+  } else {
+    document.getElementById('admin-pw-err').style.display = 'block';
+    document.getElementById('admin-pw-input').value = '';
+  }
+};
+
+['all','attente','termine','annule'].forEach(function(f){
+  document.getElementById('af-'+f).onclick = function(){
+    document.querySelectorAll('.afbtn').forEach(function(b){ b.classList.remove('active'); });
+    this.classList.add('active');
+    adminFilter = f;
+    renderAdminOrders();
+  };
+});
+
+function loadAdminOrders(){
+  var list = document.getElementById('admin-orders-list');
+  list.innerHTML = '<div style="text-align:center;padding:2.5rem 1rem;color:var(--muted);"><span style="font-size:2rem;display:block;margin-bottom:.5rem;">⏳</span>Chargement des commandes...</div>';
+  db.collection('orders').orderBy('createdAt','desc').get().then(function(snap){
+    allAdminOrders = [];
+    snap.forEach(function(doc){ allAdminOrders.push(Object.assign({id: doc.id}, doc.data())); });
+    updateAdminStats();
+    renderAdminOrders();
+  }).catch(function(e){
+    list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--red2);">❌ Erreur : '+e.message+'</div>';
+  });
+}
+
+function updateAdminStats(){
+  document.getElementById('as-total').textContent = allAdminOrders.length;
+  document.getElementById('as-attente').textContent = allAdminOrders.filter(function(o){ return o.statut==='attente'; }).length;
+  document.getElementById('as-termine').textContent = allAdminOrders.filter(function(o){ return o.statut==='termine'; }).length;
+}
+
+function renderAdminOrders(){
+  var list = document.getElementById('admin-orders-list');
+  var filtered = adminFilter==='all' ? allAdminOrders : allAdminOrders.filter(function(o){ return o.statut===adminFilter; });
+  if(filtered.length===0){
+    list.innerHTML = '<div class="empty"><span class="ei">📦</span><p>Aucune commande ici.</p></div>';
+    return;
+  }
+  var sm = {attente:{cls:'s-attente',lbl:'⏳ En attente'},termine:{cls:'s-termine',lbl:'✅ Terminée'},annule:{cls:'s-annule',lbl:'❌ Annulée'}};
+  list.innerHTML = filtered.map(function(o){
+    var s = sm[o.statut] || sm.attente;
+    var acCls = 'ac-'+(o.statut||'attente');
+    var ts = o.createdAt&&o.createdAt.seconds ? new Date(o.createdAt.seconds*1000).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+    var oid = o.orderId || o.id.slice(-8).toUpperCase();
+    var preuve = '';
+    if(o.proofType==='txid' && o.proofTxid) preuve = '<span>Preuve :</span> <strong style="color:#c084fc;">'+o.proofTxid+'</strong><br/>';
+    else if(o.proofType==='screenshot') preuve = '<span>Preuve :</span> <strong>📸 Capture envoyée</strong><br/>';
+    var acts = '';
+    if(o.statut==='attente'){
+      acts = '<div class="ac-acts"><button class="ac-btn-ok" onclick="updateOrderStatus(\''+o.id+'\',\'termine\')">✅ Valider le paiement</button><button class="ac-btn-no" onclick="updateOrderStatus(\''+o.id+'\',\'annule\')">❌ Annuler</button></div>';
+    } else if(o.statut==='termine'){
+      acts = '<div class="ac-acts"><button class="ac-btn-no" onclick="updateOrderStatus(\''+o.id+'\',\'annule\')" style="flex:none;padding:.4rem .8rem;">Annuler</button></div>';
+    } else {
+      acts = '<div class="ac-acts"><button class="ac-btn-ok" onclick="updateOrderStatus(\''+o.id+'\',\'termine\')" style="flex:none;padding:.4rem .8rem;">Remettre valide</button></div>';
+    }
+    return '<div class="admin-card '+acCls+'" id="acard-'+o.id+'">'+
+      '<div class="ac-top"><div><div class="ac-id">#'+oid+'</div><div class="ac-date">'+ts+'</div></div>'+
+      '<div class="sbadge '+s.cls+'">'+s.lbl+'</div></div>'+
+      '<div class="ac-info">'+
+        '<span>Article :</span> <strong>'+(o.article||'—')+'</strong><br/>'+
+        '<span>Prix :</span> <strong>'+(parseInt(o.prix||0)).toLocaleString('fr-FR')+' FCFA</strong><br/>'+
+        '<span>ID Free Fire :</span> <strong style="color:var(--red2);">'+(o.id_freefire||'—')+'</strong><br/>'+
+        preuve+
+        '<span>Client :</span> '+(o.userEmail||'—')+'<br/>'+
+        '<span>Paiement :</span> '+(o.paiement||'—')+
+      '</div>'+acts+
+    '</div>';
+  }).join('');
+}
+
+function updateOrderStatus(docId, newStatus){
+  db.collection('orders').doc(docId).update({statut: newStatus}).then(function(){
+    toast(newStatus==='termine' ? '✅ Commande validée !' : '❌ Commande annulée', newStatus==='termine'?'success':'error');
+    var o = allAdminOrders.find(function(x){ return x.id===docId; });
+    if(o){ o.statut = newStatus; }
+    updateAdminStats();
+    renderAdminOrders();
+  }).catch(function(e){
+    toast('Erreur : '+e.message,'error');
+  });
+}
 </script>
 </body>
 </html>
