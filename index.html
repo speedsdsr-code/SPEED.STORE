@@ -1019,22 +1019,30 @@ function openPackPicker(cat){
   document.getElementById('pp-icon').textContent = c.icon;
   document.getElementById('pp-title').textContent = c.name;
   selectedPackOption = null;
+  var curCat = cat;
   var list = document.getElementById('pp-list');
   list.innerHTML = c.packs.map(function(p, i){
-    return '<div class="pp-option" id="ppopt-'+i+'" onclick="selectPackOption('+i+',''+cat+'')">' +
+    var badge = p.badge ? '<span style="background:var(--red);color:#fff;font-size:.6rem;padding:.1rem .4rem;border-radius:10px;margin-right:.3rem;">'+p.badge+'</span>' : '';
+    var oldPriceHtml = p.oldPrice ? '<div class="pp-opt-old">'+parseInt(p.oldPrice).toLocaleString('fr-FR')+' CFA</div>' : '';
+    return '<div class="pp-option" id="ppopt-'+i+'">' +
       '<div class="pp-radio"></div>' +
       '<div class="pp-opt-info">' +
-        '<div class="pp-opt-name">'+(p.badge?'<span style="background:var(--red);color:#fff;font-size:.6rem;padding:.1rem .4rem;border-radius:10px;margin-right:.3rem;">'+p.badge+'</span>':'')+p.name+'</div>' +
+        '<div class="pp-opt-name">'+badge+p.name+'</div>' +
         '<div class="pp-opt-desc">'+p.desc+'</div>' +
       '</div>' +
       '<div class="pp-opt-prices">' +
-        (p.oldPrice ? '<div class="pp-opt-old">'+parseInt(p.oldPrice).toLocaleString('fr-FR')+' CFA</div>' : '') +
+        oldPriceHtml +
         '<div class="pp-opt-price">'+parseInt(p.price).toLocaleString('fr-FR')+' CFA</div>' +
       '</div>' +
     '</div>';
   }).join('');
+  // Add click handlers after rendering
+  c.packs.forEach(function(p, i){
+    document.getElementById('ppopt-'+i).onclick = function(){
+      selectPackOption(i, cat);
+    };
+  });
   document.getElementById('pack-picker-sheet').classList.add('open');
-  // Auto-select if only 1 option (Booyah Pass)
   if(c.packs.length === 1) selectPackOption(0, cat);
 }
 
