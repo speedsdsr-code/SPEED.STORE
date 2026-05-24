@@ -1062,12 +1062,18 @@ document.getElementById('pp-close').onclick = closePackPicker;
 document.getElementById('pp-bg').onclick = closePackPicker;
 document.getElementById('pp-confirm-btn').onclick = function(){
   if(!selectedPackOption){ toast('⚠️ Choisissez un pack','error'); return; }
+  if(!currentUser){ toast('🔒 Connectez-vous pour acheter','error'); closePackPicker(); setTimeout(function(){goScreen('login');},900); return; }
+  // Sauvegarder la sélection AVANT de fermer
+  var pack = selectedPackOption;
   closePackPicker();
-  selItem = {name: selectedPackOption.name, diamonds: selectedPackOption.diamonds, price: selectedPackOption.price};
+  selItem = {name: pack.name, diamonds: pack.diamonds, price: pack.price};
   document.getElementById('rc-article').textContent = selItem.name;
   document.getElementById('rc-prix').textContent = parseInt(selItem.price).toLocaleString('fr-FR')+' FCFA';
-  document.getElementById('order-overlay').classList.add('open');
+  document.getElementById('rc-id').textContent = '—';
+  document.getElementById('o-ffid').value = '';
+  document.getElementById('o-ffid2').value = '';
   tunnelStep(1);
+  document.getElementById('order-overlay').classList.add('open');
 };
 
 // ── ADMIN PANEL ──
